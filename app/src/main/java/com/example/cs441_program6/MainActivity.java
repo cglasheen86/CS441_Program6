@@ -50,11 +50,12 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
         computeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //NetTask netTask;
                 System.out.println("Clicked the compute button");
                 String v = inputText.getText().toString();
                 System.out.println(v);
                 String request = "value=" + v;
-                netTask = new NetTask("https://cs.binghamton.edu/~cglashe1/php/double.php", request, handle);
+                netTask = new NetTask("https://cs.binghamton.edu/~pmadden/php/double.php", request, handle);
 
                 netTask.execute((Void) null);
 
