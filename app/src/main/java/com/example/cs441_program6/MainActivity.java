@@ -26,9 +26,11 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+
 interface NetResponse{
     void netResult(Integer code, JSONArray json);
 }
+
 
 public class MainActivity extends AppCompatActivity implements NetResponse{
     NetTask netTask;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
         computeButton = findViewById(R.id.compute);
         computeResult = findViewById(R.id.computeresult);
         handle = this;
+
         computeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
                 String v = inputText.getText().toString();
                 System.out.println(v);
                 String request = "value=" + v;
-                netTask = new NetTask("https://cs.binghamton.edu/~pmadden/php/double.php", request, handle);
+                netTask = new NetTask("https://cs.binghamton.edu/~cglashe1/triple.php", request, handle);
 
                 netTask.execute((Void) null);
 
