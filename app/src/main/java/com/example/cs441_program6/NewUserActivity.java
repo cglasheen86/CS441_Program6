@@ -2,14 +2,11 @@ package com.example.cs441_program6;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-//import android.support.design.widget.FloatingActionButton;
-//import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,29 +25,29 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-interface NetResponse{
-    void netResult(Integer code, JSONArray json);
-}
-
-
-public class MainActivity extends AppCompatActivity implements NetResponse{
+public class NewUserActivity extends AppCompatActivity implements NetResponse{
     NetTask netTask;
+    EditText inputFn;
+    EditText inputLn;
     EditText inputEmail;
     EditText inputPassword;
+    EditText inputConfirmPassword;
     Button computeButton;
     Button newUserButton;
-    MainActivity handle;
+    NewUserActivity handle;
     TextView computeResult;
     String updateString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_new_user);
+        inputFn = findViewById(R.id.fn);
+        inputLn = findViewById(R.id.ln);
         inputEmail = findViewById(R.id.email);
         inputPassword = findViewById(R.id.password);
-        computeButton = findViewById(R.id.login);
+        inputConfirmPassword = findViewById(R.id.confirmPassword);
+        computeButton = findViewById(R.id.create);
         newUserButton = findViewById(R.id.new_user);
         computeResult = findViewById(R.id.computeresult);
         handle = this;
@@ -58,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
         newUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NewUserActivity.class));
+                startActivity(new Intent(NewUserActivity.this, MainActivity.class));
             }
         });
 
@@ -66,11 +63,14 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
             @Override
             public void onClick(View view) {
                 //NetTask netTask;
-                System.out.println("Clicked the compute button");
+                System.out.println("Clicked the compute2 button");
+                String fn = inputFn.getText().toString();
+                String ln = inputLn.getText().toString();
                 String e = inputEmail.getText().toString();
                 String p = inputPassword.getText().toString();
-                String request = "email=" + e + "&password=" + p;
-                netTask = new NetTask("https://cs.binghamton.edu/~cglashe1/login.php", request, handle);
+                String cp = inputConfirmPassword.getText().toString();
+                String request = "fn=" + fn + "&ln=" + ln + "&e=" + e + "&p=" + p + "&cp=" + cp;
+                netTask = new NewUserActivity.NetTask("https://cs.binghamton.edu/~cglashe1/addUser.php", request, handle);
 
                 netTask.execute((Void) null);
 
@@ -88,20 +88,19 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
             try {
                 JSONObject item = json.getJSONObject(i);
 
-                if (item.getString("fn") != "null" && item.getString("ln") != "null") {
-                    System.out.println("Found a match");
-                    System.out.println(item.getString("fn"));
-                    updateString = "Welcome " + item.getString("fn") + " " + item.getString("ln");
-                    if(item.getString("fn") != "null" && item.getString("ln") != "null"){
-                        Intent intent = new Intent(MainActivity.this, CatActivity.class);
-                        intent.putExtra("fn", item.getString("fn"));
-                        intent.putExtra("ln", item.getString("ln"));
-                        intent.putExtra("email", item.getString("email"));
-                        startActivity(intent);
-                    }
-
+                if (item.getInt("status") == 1) {
+                    updateString = "All fields must be filled";
                 }
-                else updateString = "Invalid login info";
+                else if (item.getInt("status") == 2) {
+                    updateString = "Reconfirm password please";
+                }
+                else if (item.getInt("status") == 3) {
+                    updateString = "Account already exists";
+                }
+                else{
+                    updateString = "good";
+                    startActivity(new Intent(NewUserActivity.this, MainActivity.class));
+                }
             }
             catch (JSONException e)
             {
@@ -112,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
                 @Override
                 public void run() {
                     computeResult.setText(updateString);
-
                 }
             });
         }
@@ -227,6 +225,4 @@ public class MainActivity extends AppCompatActivity implements NetResponse{
 
         }
     }
-
-
 }

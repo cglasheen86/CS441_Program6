@@ -7,7 +7,8 @@
 # and a string result, in case you want to work with a string.
 $x = $_POST["value"];
 $x = 3 * $x;
-$result[] = array('result' => $x, 'status' => 0, 'input' => $_POST["value"], 'string' => "a string");
+$y = $_POST["name"];
+$result[] = array('name' => $y, 'result' => $x, 'status' => 0, 'input' => $_POST["value"], 'string' => "a string");
 $js = json_encode($result);
 echo $js;
 ?>
